@@ -59,6 +59,9 @@ export type ComposerProps = {
   /** The hint in the empty box. Give several and they take turns. */
   placeholder?: string | string[];
   defaultValue?: string;
+  /** The text, when you want to hold it yourself. Pair it with onValueChange. */
+  value?: string;
+  onValueChange?: (text: string) => void;
   models?: ComposerModel[];
   /** The chosen model. Left out, the Composer remembers it itself. */
   model?: string;
@@ -122,6 +125,8 @@ export function Composer({
   onStop,
   placeholder = "Ask anything",
   defaultValue = "",
+  value,
+  onValueChange,
   models,
   model,
   onModelChange,
@@ -146,7 +151,12 @@ export function Composer({
   className,
   style,
 }: ComposerProps) {
-  const [text, setText] = useState(defaultValue);
+  const [own, setOwn] = useState(defaultValue);
+  const text = value ?? own;
+  const setText = (next: string) => {
+    if (value === undefined) setOwn(next);
+    onValueChange?.(next);
+  };
   const [files, setFiles] = useState<Attached[]>([]);
   const [chosen, setChosen] = useState(models?.[0]?.id);
   const [focused, setFocused] = useState(false);

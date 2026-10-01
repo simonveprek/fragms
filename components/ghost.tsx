@@ -218,17 +218,16 @@ export function Ghost({
     const place = (target: Element, at: [number, number] = [0.5, 0.5]) => {
       const origin = element.getBoundingClientRect();
       const rect = target.getBoundingClientRect();
+      // Screen pixels into the Ghost's own, so it still aims true inside
+      // anything scaled, like a zoomed preview.
+      const scale = origin.width / element.offsetWidth || 1;
+      const x = (rect.left - origin.left) / scale;
+      const y = (rect.top - origin.top) / scale;
+      const w = rect.width / scale;
+      const h = rect.height / scale;
       return {
-        box: {
-          x: rect.left - origin.left,
-          y: rect.top - origin.top,
-          w: rect.width,
-          h: rect.height,
-        },
-        point: {
-          x: rect.left - origin.left + rect.width * at[0],
-          y: rect.top - origin.top + rect.height * at[1],
-        },
+        box: { x, y, w, h },
+        point: { x: x + w * at[0], y: y + h * at[1] },
       };
     };
 
